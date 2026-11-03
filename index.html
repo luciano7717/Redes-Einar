@@ -1,0 +1,352 @@
+<!doctype html>
+<html lang="es">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#102c2c">
+  <meta name="description" content="Cuestionario interactivo de redes informáticas, cableado y fibra óptica.">
+  <title>Conexión | Reto de redes</title>
+  <style>
+    :root {
+      color-scheme: light;
+      --ink: #173333;
+      --muted: #647775;
+      --paper: #f4f4ed;
+      --panel: #fffefa;
+      --line: #e2e7dc;
+      --green: #176b58;
+      --green-dark: #102c2c;
+      --lime: #d6f36a;
+      --orange: #e77d50;
+      --blue: #70b8c2;
+      --shadow: 0 22px 70px rgba(20, 52, 48, .11);
+    }
+
+    * { box-sizing: border-box; }
+
+    body {
+      margin: 0;
+      min-width: 320px;
+      min-height: 100vh;
+      color: var(--ink);
+      background-color: var(--paper);
+      background-image: radial-gradient(circle at 1px 1px, rgba(23, 107, 88, .14) 1px, transparent 0);
+      background-size: 24px 24px;
+      font-family: "Trebuchet MS", "Segoe UI", sans-serif;
+    }
+
+    button { font: inherit; }
+    button:focus-visible { outline: 3px solid var(--orange); outline-offset: 3px; }
+
+    .site-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      width: min(1120px, calc(100% - 48px));
+      margin: 0 auto;
+      padding: 25px 0;
+      animation: enter .55s ease both;
+    }
+
+    .brand { display: flex; align-items: center; gap: 11px; font-size: 14px; font-weight: 800; letter-spacing: .04em; }
+    .brand-mark { display: grid; width: 36px; height: 36px; place-items: center; color: var(--lime); background: var(--green-dark); border-radius: 11px; }
+    .brand-mark svg { width: 21px; height: 21px; }
+    .author { color: var(--muted); font-size: 13px; }
+    .author strong { color: var(--ink); }
+
+    main { width: min(1120px, calc(100% - 48px)); margin: 30px auto 54px; }
+
+    .intro { display: grid; grid-template-columns: 1fr auto; align-items: end; gap: 24px; margin-bottom: 24px; animation: enter .65s ease both; }
+    .eyebrow { display: flex; align-items: center; gap: 8px; margin: 0 0 12px; color: var(--green); font-size: 11px; font-weight: 800; letter-spacing: .16em; text-transform: uppercase; }
+    .eyebrow::before { width: 20px; height: 2px; content: ""; background: var(--orange); }
+    h1 { margin: 0; font-family: Georgia, "Times New Roman", serif; font-size: clamp(36px, 5vw, 58px); font-weight: 500; letter-spacing: -.035em; line-height: 1.03; }
+    h1 span { color: var(--green); font-style: italic; }
+    .intro-copy { max-width: 340px; margin: 13px 0 0; color: var(--muted); font-size: 15px; line-height: 1.55; }
+    .network-stamp { display: flex; align-items: center; gap: 12px; padding: 12px 15px; border: 1px solid #d5dfd1; border-radius: 12px; background: rgba(255, 254, 250, .68); color: var(--green); font-size: 12px; font-weight: 700; }
+    .network-stamp svg { width: 25px; height: 25px; }
+
+    .quiz-shell { display: grid; grid-template-columns: minmax(0, 1fr) 265px; min-height: 480px; overflow: hidden; border: 1px solid rgba(26, 72, 62, .1); border-radius: 20px; background: var(--panel); box-shadow: var(--shadow); animation: enter .75s ease both; }
+    .quiz-main { padding: clamp(24px, 5vw, 54px); }
+    .quiz-aside { position: relative; display: flex; flex-direction: column; justify-content: space-between; overflow: hidden; padding: 30px 25px; color: #f4f5e9; background: var(--green-dark); }
+    .quiz-aside::before, .quiz-aside::after { position: absolute; width: 280px; height: 280px; border: 1px solid rgba(214, 243, 106, .18); border-radius: 50%; content: ""; }
+    .quiz-aside::before { top: 100px; right: -170px; box-shadow: 0 0 0 24px rgba(214,243,106,.035), 0 0 0 49px rgba(214,243,106,.03); }
+    .quiz-aside::after { bottom: -218px; left: -168px; box-shadow: 0 0 0 24px rgba(112,184,194,.06), 0 0 0 49px rgba(112,184,194,.04); }
+    .aside-content { position: relative; z-index: 1; }
+    .aside-label { margin: 0 0 11px; color: var(--lime); font-size: 10px; font-weight: 800; letter-spacing: .16em; text-transform: uppercase; }
+    .aside-number { margin: 0; font-family: Georgia, "Times New Roman", serif; font-size: 54px; line-height: 1; }
+    .aside-caption { margin: 9px 0 0; color: #c1d0c4; font-size: 13px; }
+    .node-map { position: relative; z-index: 1; width: 100%; max-height: 180px; }
+    .aside-foot { position: relative; z-index: 1; display: flex; align-items: center; gap: 8px; color: #c1d0c4; font-size: 11px; }
+    .live-dot { width: 7px; height: 7px; border-radius: 50%; background: var(--lime); box-shadow: 0 0 0 4px rgba(214,243,106,.13); }
+
+    .quiz-topline { display: flex; align-items: center; justify-content: space-between; gap: 12px; margin-bottom: 12px; }
+    .question-count { color: var(--muted); font-size: 12px; font-weight: 700; }
+    .question-count strong { color: var(--ink); }
+    .score-live { display: inline-flex; align-items: center; gap: 6px; color: var(--green); font-size: 12px; font-weight: 800; }
+    .score-live svg { width: 15px; height: 15px; }
+    .progress-track { height: 5px; overflow: hidden; border-radius: 9px; background: #e9eee5; }
+    .progress-fill { width: 10%; height: 100%; border-radius: inherit; background: var(--green); transition: width .4s ease; }
+    .category { display: inline-flex; margin: 30px 0 11px; padding: 6px 9px; border-radius: 5px; color: #296555; background: #e8f2e7; font-size: 10px; font-weight: 800; letter-spacing: .08em; text-transform: uppercase; }
+    h2 { max-width: 640px; margin: 0 0 21px; font-family: Georgia, "Times New Roman", serif; font-size: clamp(23px, 3vw, 31px); font-weight: 500; letter-spacing: -.02em; line-height: 1.25; }
+    .answers { display: grid; gap: 10px; }
+    .answer {
+      display: flex; align-items: center; gap: 13px; width: 100%; min-height: 53px; padding: 10px 14px; border: 1px solid var(--line); border-radius: 9px; color: var(--ink); background: #fff; text-align: left; cursor: pointer; transition: border-color .18s ease, background .18s ease, transform .18s ease;
+    }
+    .answer:hover:not(:disabled) { transform: translateX(3px); border-color: #8db4a0; background: #f8fbf5; }
+    .answer:disabled { cursor: default; }
+    .answer-key { display: grid; flex: 0 0 27px; width: 27px; height: 27px; place-items: center; border: 1px solid #dfe6dc; border-radius: 7px; color: #61736e; font-size: 11px; font-weight: 800; }
+    .answer-text { flex: 1; font-size: 14px; line-height: 1.4; }
+    .answer-icon { display: none; flex: 0 0 18px; width: 18px; height: 18px; }
+    .answer.correct { border-color: #58a383; background: #edf7ee; }
+    .answer.correct .answer-key { border-color: #58a383; color: white; background: #348064; }
+    .answer.incorrect { border-color: #e1a18b; background: #fff2ed; }
+    .answer.incorrect .answer-key { border-color: #d7896d; color: white; background: #c96e50; }
+    .answer.correct .answer-icon, .answer.incorrect .answer-icon { display: block; }
+    .feedback { min-height: 25px; margin: 12px 0 0; color: var(--muted); font-size: 12px; line-height: 1.5; }
+    .feedback.good { color: #287354; }
+    .feedback.bad { color: #b35439; }
+    .quiz-actions { display: flex; justify-content: flex-end; margin-top: 6px; }
+    .next-button, .restart-button { display: inline-flex; align-items: center; justify-content: center; gap: 9px; min-height: 45px; padding: 0 17px; border: 0; border-radius: 8px; color: #f7f8ec; background: var(--green-dark); font-size: 13px; font-weight: 800; cursor: pointer; transition: background .2s ease, transform .2s ease; }
+    .next-button:hover, .restart-button:hover { transform: translateY(-2px); background: var(--green); }
+    .next-button:disabled { color: #99a8a0; background: #e8ece6; cursor: not-allowed; transform: none; }
+    .next-button svg, .restart-button svg { width: 16px; height: 16px; }
+    .result { padding-top: 27px; animation: enter .4s ease both; }
+    .result-kicker { margin: 0 0 7px; color: var(--green); font-size: 11px; font-weight: 800; letter-spacing: .14em; text-transform: uppercase; }
+    .result-score { display: flex; flex-wrap: wrap; align-items: baseline; gap: 8px; margin: 0 0 6px; font-family: Georgia, "Times New Roman", serif; font-size: 42px; }
+    .result-score span { color: var(--green); }
+    .result-summary { margin: 0 0 20px; color: var(--muted); font-size: 13px; }
+    .review-list { display: grid; gap: 8px; max-height: 270px; overflow-y: auto; padding: 0 5px 0 0; }
+    .review-item { padding: 11px 13px; border-left: 3px solid #4d9877; border-radius: 0 7px 7px 0; background: #f3f7ef; }
+    .review-item.missed { border-left-color: var(--orange); background: #fff5ef; }
+    .review-question { margin: 0 0 5px; font-size: 12px; font-weight: 800; line-height: 1.4; }
+    .review-answer { margin: 0; color: var(--muted); font-size: 11px; line-height: 1.45; }
+    .review-answer strong { color: var(--green); }
+    .review-item.missed .review-answer strong { color: #b35439; }
+    .result .restart-button { margin-top: 18px; }
+    .site-footer { display: flex; justify-content: space-between; gap: 12px; margin-top: 19px; color: #778681; font-size: 11px; }
+    .site-footer span:last-child { color: var(--green); font-weight: 700; }
+    .sr-only { position: absolute; width: 1px; height: 1px; padding: 0; margin: -1px; overflow: hidden; clip: rect(0,0,0,0); white-space: nowrap; border: 0; }
+
+    @keyframes enter { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+    @media (prefers-reduced-motion: reduce) { *, *::before, *::after { scroll-behavior: auto !important; animation-duration: .01ms !important; animation-iteration-count: 1 !important; transition-duration: .01ms !important; } }
+    @media (max-width: 760px) {
+      .site-header, main { width: min(100% - 32px, 600px); }
+      .site-header { padding: 18px 0; }
+      main { margin-top: 20px; }
+      .intro { grid-template-columns: 1fr; gap: 17px; }
+      .network-stamp { justify-self: start; }
+      .quiz-shell { grid-template-columns: 1fr; }
+      .quiz-aside { display: none; }
+      .quiz-main { padding: 25px 22px; }
+      .category { margin-top: 24px; }
+    }
+    @media (max-width: 420px) {
+      .site-header, main { width: calc(100% - 26px); }
+      .author { font-size: 11px; }
+      .quiz-main { padding: 21px 16px; }
+      .answer { gap: 10px; padding: 9px 10px; }
+      .answer-text { font-size: 13px; }
+      .site-footer { flex-direction: column; }
+    }
+  </style>
+</head>
+<body>
+  <header class="site-header">
+    <div class="brand">
+      <span class="brand-mark" aria-hidden="true">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="5" r="2.2"/><circle cx="5" cy="18" r="2.2"/><circle cx="19" cy="18" r="2.2"/><path d="M10.9 6.9 6.1 16M13.1 6.9l4.8 9.1M7.3 18h9.4"/></svg>
+      </span>
+      <span>CONEXIÓN / LAB</span>
+    </div>
+    <div class="author">Creado por <strong>Einar</strong></div>
+  </header>
+
+  <main>
+    <section class="intro" aria-labelledby="page-title">
+      <div>
+        <p class="eyebrow">Conocimientos de redes</p>
+        <h1 id="page-title">Pon a prueba<br><span>tu conexión.</span></h1>
+        <p class="intro-copy">Diez preguntas, un recorrido por los fundamentos que mantienen conectado al mundo.</p>
+      </div>
+      <div class="network-stamp" aria-label="Cuestionario de 10 preguntas">
+        <svg viewBox="0 0 32 32" fill="none" stroke="currentColor" stroke-width="1.6" aria-hidden="true"><rect x="5" y="7" width="22" height="17" rx="3"/><path d="M10 12h12M10 16h7M12 27h8M16 24v3"/><circle cx="23" cy="20" r="1" fill="currentColor"/></svg>
+        <span>RETO RÁPIDO<br><strong>10 preguntas</strong></span>
+      </div>
+    </section>
+
+    <section class="quiz-shell" aria-label="Cuestionario de redes">
+      <div class="quiz-main" id="quiz-main" aria-live="polite"></div>
+      <aside class="quiz-aside" aria-label="Información del reto">
+        <div class="aside-content">
+          <p class="aside-label">Tu misión</p>
+          <p class="aside-number">10<span style="color:var(--lime)">.</span></p>
+          <p class="aside-caption">preguntas elegidas<br>al azar para ti</p>
+        </div>
+        <svg class="node-map" viewBox="0 0 220 150" fill="none" aria-hidden="true">
+          <path d="M49 78h50m19 0h52M108 38v25m0 30v28M50 78 84 44m48 68 35-34M49 78l35 34m48-68 35 34" stroke="#73a796" stroke-width="1.2" stroke-dasharray="3 5"/>
+          <circle cx="40" cy="78" r="9" fill="#d6f36a"/><circle cx="108" cy="34" r="7" fill="#70b8c2"/><circle cx="108" cy="78" r="13" fill="#f4f4ed"/><circle cx="108" cy="78" r="5" fill="#176b58"/><circle cx="180" cy="78" r="9" fill="#e77d50"/><circle cx="108" cy="120" r="7" fill="#d6f36a"/><circle cx="83" cy="42" r="3" fill="#f4f4ed"/><circle cx="140" cy="111" r="3" fill="#70b8c2"/>
+          <text x="24" y="103" fill="#c1d0c4" font-size="8" font-family="sans-serif">LAN</text><text x="97" y="20" fill="#c1d0c4" font-size="8" font-family="sans-serif">WAN</text><text x="164" y="103" fill="#c1d0c4" font-size="8" font-family="sans-serif">FIBRA</text>
+        </svg>
+        <div class="aside-foot"><span class="live-dot"></span>Banco de 30 preguntas</div>
+      </aside>
+    </section>
+
+    <footer class="site-footer"><span>Redes informáticas · Cuestionario interactivo</span><span>Autor: Einar</span></footer>
+  </main>
+
+  <script>
+    const questionBank = [
+      { category: "Fundamentos", question: "¿Qué dispositivo conecta distintas redes y decide por dónde enviar los paquetes?", options: ["Un router", "Un repetidor", "Un punto de acceso", "Un switch no gestionable"], answer: "Un router" },
+      { category: "Acrónimos", question: "¿Qué significa LAN?", options: ["Local Area Network", "Long Access Node", "Linked Analog Network", "Local Admin Number"], answer: "Local Area Network" },
+      { category: "Cableado UTP", question: "¿Qué característica describe mejor un cable UTP?", options: ["Pares trenzados sin blindaje", "Un único conductor coaxial", "Fibras de vidrio protegidas", "Pares paralelos con blindaje metálico"], answer: "Pares trenzados sin blindaje" },
+      { category: "Conectores", question: "¿Cuántos contactos tiene habitualmente un conector RJ45 usado en Ethernet?", options: ["8", "4", "6", "12"], answer: "8" },
+      { category: "Normas T568", question: "En el estándar T568B, ¿qué color ocupa el pin 1?", options: ["Blanco-naranja", "Blanco-verde", "Naranja", "Verde"], answer: "Blanco-naranja" },
+      { category: "Herramientas", question: "¿Qué herramienta se utiliza para insertar los hilos en un panel de parcheo?", options: ["Herramienta de impacto", "Crimpadora coaxial", "Pelacables de fibra", "Multímetro"], answer: "Herramienta de impacto" },
+      { category: "Fibra óptica", question: "¿Qué transporta la información a través de una fibra óptica?", options: ["Pulsos de luz", "Variaciones de voltaje", "Ondas de radio", "Impulsos mecánicos"], answer: "Pulsos de luz" },
+      { category: "Conectores", question: "¿Qué tipo de acoplamiento caracteriza al conector SC?", options: ["Push-pull", "Bayoneta BNC", "Rosca SMA", "Cierre RJ"], answer: "Push-pull" },
+      { category: "Acrónimos", question: "¿Qué significa DHCP?", options: ["Dynamic Host Configuration Protocol", "Distributed Hardware Control Program", "Data Host Connection Port", "Digital Channel Handling Process"], answer: "Dynamic Host Configuration Protocol" },
+      { category: "Normas T568", question: "¿Qué par ocupa los pines 1 y 2 en el estándar T568A?", options: ["Blanco-verde y verde", "Blanco-naranja y naranja", "Blanco-azul y azul", "Blanco-marrón y marrón"], answer: "Blanco-verde y verde" },
+      { category: "Fundamentos", question: "¿Qué dirección identifica una interfaz de red en la capa de enlace?", options: ["Dirección MAC", "Dirección URL", "Máscara de subred", "Nombre DNS"], answer: "Dirección MAC" },
+      { category: "Herramientas", question: "¿Qué instrumento comprueba continuidad y correspondencia de hilos en un cable Ethernet?", options: ["Comprobador de cables", "Medidor de potencia óptica", "Crimpadora", "Punto de acceso"], answer: "Comprobador de cables" },
+      { category: "Fibra óptica", question: "¿Cuál es una diferencia habitual entre fibra monomodo y multimodo?", options: ["El diámetro del núcleo y los modos de propagación", "El tipo de dirección IP que admite", "El número de pares de cobre", "El protocolo DHCP que utiliza"], answer: "El diámetro del núcleo y los modos de propagación" },
+      { category: "Conectores", question: "¿Qué ventaja física suele ofrecer el conector LC frente al SC?", options: ["Un formato más pequeño", "No necesita pulido", "Duplica la distancia sin equipos", "Solo funciona con cobre"], answer: "Un formato más pequeño" },
+      { category: "Acrónimos", question: "¿Qué significa DNS?", options: ["Domain Name System", "Dynamic Network Service", "Data Node Security", "Direct Name Server"], answer: "Domain Name System" },
+      { category: "Cableado UTP", question: "¿Para qué se trenzan entre sí los conductores de cada par UTP?", options: ["Para reducir interferencias electromagnéticas", "Para aumentar el número de contactos", "Para identificar la dirección IP", "Para evitar usar conectores"], answer: "Para reducir interferencias electromagnéticas" },
+      { category: "Normas T568", question: "¿Qué tienen en común T568A y T568B?", options: ["Ambos organizan los mismos cuatro pares en un conector de ocho contactos", "Usan conectores distintos", "Uno es exclusivo de fibra óptica", "Solo cambian el orden de los pines 7 y 8"], answer: "Ambos organizan los mismos cuatro pares en un conector de ocho contactos" },
+      { category: "Fundamentos", question: "¿Qué equipo suele conectar varios dispositivos dentro de una misma LAN?", options: ["Un switch", "Un módem DSL", "Un conversor de medios", "Un cortafuegos perimetral"], answer: "Un switch" },
+      { category: "Acrónimos", question: "¿Qué significa PoE en redes Ethernet?", options: ["Power over Ethernet", "Protocol of Encryption", "Port on Extension", "Packet over Exchange"], answer: "Power over Ethernet" },
+      { category: "Herramientas", question: "¿Para qué sirve una crimpadora RJ45?", options: ["Fijar el conector al cable", "Medir la longitud de onda", "Detectar direcciones IP duplicadas", "Limpiar el núcleo de fibra"], answer: "Fijar el conector al cable" },
+      { category: "Fibra óptica", question: "¿Qué componente convierte una señal eléctrica en óptica para transmitirla por fibra?", options: ["Un transmisor óptico", "Un patch panel de cobre", "Un inyector PoE", "Un servidor DHCP"], answer: "Un transmisor óptico" },
+      { category: "Conectores", question: "¿Qué tipo de terminación de fibra reduce la reflexión en muchos conectores actuales?", options: ["APC, con pulido angular", "UTP, sin pulido", "RJ45, con pestaña", "T568B, con crimpado"], answer: "APC, con pulido angular" },
+      { category: "Acrónimos", question: "¿Qué significa WAN?", options: ["Wide Area Network", "Wireless Access Number", "Wired Analog Node", "Web Address Name"], answer: "Wide Area Network" },
+      { category: "Cableado UTP", question: "¿Qué categoría de cable se asocia habitualmente con Ethernet de hasta 1 Gbit/s en enlaces de 100 m?", options: ["Cat 5e", "Cat 3", "Cat 1", "Cat 2"], answer: "Cat 5e" },
+      { category: "Normas T568", question: "¿Qué tipo de latiguillo se obtiene al terminar ambos extremos con el mismo estándar, por ejemplo T568B?", options: ["Directo", "Cruzado", "Consola serie", "Fibra dúplex"], answer: "Directo" },
+      { category: "Fundamentos", question: "¿Qué servicio traduce nombres como ejemplo.com a direcciones IP?", options: ["DNS", "DHCP", "NTP", "SNMP"], answer: "DNS" },
+      { category: "Herramientas", question: "¿Qué herramienta ayuda a localizar un cable concreto dentro de un mazo?", options: ["Generador de tonos y sonda", "Medidor de potencia óptica", "Fusionadora de fibra", "Llave dinamométrica"], answer: "Generador de tonos y sonda" },
+      { category: "Fibra óptica", question: "¿Qué práctica protege mejor una fibra óptica durante la instalación?", options: ["Respetar el radio mínimo de curvatura", "Doblarla en ángulo recto", "Tirar del conector para tensarla", "Limpiar el extremo con los dedos"], answer: "Respetar el radio mínimo de curvatura" },
+      { category: "Conectores", question: "¿Cuál de estos conectores suele encontrarse en enlaces de fibra óptica?", options: ["LC", "RJ11", "F-type", "USB-A"], answer: "LC" },
+      { category: "Acrónimos", question: "¿Qué significa VLAN?", options: ["Virtual Local Area Network", "Verified Link Access Node", "Variable LAN Address Number", "Virtual Line Analog Network"], answer: "Virtual Local Area Network" }
+    ];
+
+    const quizMain = document.querySelector("#quiz-main");
+    const answerKeys = ["A", "B", "C", "D"];
+    let quizQuestions = [];
+    let currentIndex = 0;
+    let score = 0;
+    let selectedAnswer = null;
+    let userAnswers = [];
+
+    function shuffled(items) {
+      const copy = [...items];
+      for (let index = copy.length - 1; index > 0; index -= 1) {
+        const swapIndex = Math.floor(Math.random() * (index + 1));
+        [copy[index], copy[swapIndex]] = [copy[swapIndex], copy[index]];
+      }
+      return copy;
+    }
+
+    function startQuiz() {
+      quizQuestions = shuffled(questionBank).slice(0, 10).map((question) => ({
+        ...question,
+        options: shuffled(question.options)
+      }));
+      currentIndex = 0;
+      score = 0;
+      selectedAnswer = null;
+      userAnswers = [];
+      renderQuestion();
+    }
+
+    function renderQuestion() {
+      const question = quizQuestions[currentIndex];
+      const progress = (currentIndex / quizQuestions.length) * 100;
+      quizMain.innerHTML = `
+        <div class="quiz-topline">
+          <div class="question-count">PREGUNTA <strong>${currentIndex + 1}</strong> / ${quizQuestions.length}</div>
+          <div class="score-live" aria-label="${score} respuestas correctas">
+            <svg viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true"><path d="m4 10 4 4 8-8" stroke-linecap="round" stroke-linejoin="round"/><circle cx="10" cy="10" r="8"/></svg>
+            ${score} aciertos
+          </div>
+        </div>
+        <div class="progress-track" role="progressbar" aria-label="Progreso del cuestionario" aria-valuemin="0" aria-valuemax="10" aria-valuenow="${currentIndex}"><div class="progress-fill" style="width:${progress}%"></div></div>
+        <div class="category">${question.category}</div>
+        <h2 id="question-title">${question.question}</h2>
+        <div class="answers" role="group" aria-labelledby="question-title">
+          ${question.options.map((option, index) => `
+            <button class="answer" type="button" data-answer="${index}">
+              <span class="answer-key">${answerKeys[index]}</span>
+              <span class="answer-text">${option}</span>
+              <svg class="answer-icon" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="m4 10 4 4 8-8" stroke-linecap="round" stroke-linejoin="round"/></svg>
+            </button>`).join("")}
+        </div>
+        <p class="feedback" id="feedback" aria-live="polite">Elige la respuesta que consideres correcta.</p>
+        <div class="quiz-actions"><button class="next-button" type="button" disabled> ${currentIndex === quizQuestions.length - 1 ? "Ver resultado" : "Siguiente pregunta"}
+          <svg viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true"><path d="M4 10h12m-5-5 5 5-5 5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+        </button></div>`;
+      quizMain.querySelectorAll(".answer").forEach((button) => button.addEventListener("click", () => chooseAnswer(Number(button.dataset.answer))));
+      quizMain.querySelector(".next-button").addEventListener("click", nextQuestion);
+    }
+
+    function chooseAnswer(optionIndex) {
+      if (selectedAnswer !== null) return;
+      selectedAnswer = optionIndex;
+      const question = quizQuestions[currentIndex];
+      const chosenOption = question.options[optionIndex];
+      const isCorrect = chosenOption === question.answer;
+      userAnswers.push(chosenOption);
+      if (isCorrect) score += 1;
+
+      quizMain.querySelectorAll(".answer").forEach((button, index) => {
+        button.disabled = true;
+        if (question.options[index] === question.answer) button.classList.add("correct");
+        else if (index === optionIndex) button.classList.add("incorrect");
+      });
+
+      const feedback = quizMain.querySelector("#feedback");
+      feedback.className = `feedback ${isCorrect ? "good" : "bad"}`;
+      feedback.textContent = isCorrect ? "¡Correcto! Buena conexión." : `No exactamente. La respuesta correcta es: ${question.answer}.`;
+      quizMain.querySelector(".score-live").innerHTML = `<svg viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true"><path d="m4 10 4 4 8-8" stroke-linecap="round" stroke-linejoin="round"/><circle cx="10" cy="10" r="8"/></svg>${score} aciertos`;
+      quizMain.querySelector(".next-button").disabled = false;
+    }
+
+    function nextQuestion() {
+      if (selectedAnswer === null) return;
+      if (currentIndex < quizQuestions.length - 1) {
+        currentIndex += 1;
+        selectedAnswer = null;
+        renderQuestion();
+      } else {
+        renderResult();
+      }
+    }
+
+    function renderResult() {
+      const percentage = Math.round((score / quizQuestions.length) * 100);
+      const summary = score === 10 ? "Dominio total: tu red está en excelentes manos." : score >= 7 ? "Muy buen resultado: tienes una conexión sólida con el tema." : score >= 4 ? "Buen comienzo: cada repaso mejora la señal." : "Toca repasar algunos conceptos y volver a intentarlo.";
+      quizMain.innerHTML = `
+        <section class="result" aria-labelledby="result-title">
+          <p class="result-kicker" id="result-title">Reto completado · ${percentage}%</p>
+          <p class="result-score"><span>${score}</span> / ${quizQuestions.length}</p>
+          <p class="result-summary">${summary}</p>
+          <div class="review-list" aria-label="Revisión de respuestas">
+            ${quizQuestions.map((question, index) => {
+              const correct = userAnswers[index] === question.answer;
+              return `<article class="review-item ${correct ? "" : "missed"}">
+                <p class="review-question">${index + 1}. ${question.question}</p>
+                <p class="review-answer">${correct ? "Tu respuesta" : `Tu respuesta: ${userAnswers[index]}`} · <strong>Correcta: ${question.answer}</strong></p>
+              </article>`;
+            }).join("")}
+          </div>
+          <button class="restart-button" type="button">
+            <svg viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true"><path d="M16 7V3m0 4h-4M4.6 8a6 6 0 1 1-.2 4" stroke-linecap="round" stroke-linejoin="round"/><path d="M4 4v4h4" stroke-linecap="round" stroke-linejoin="round"/></svg>
+            Jugar otra vez
+          </button>
+        </section>`;
+      quizMain.querySelector(".restart-button").addEventListener("click", startQuiz);
+      quizMain.querySelector(".result").focus({ preventScroll: true });
+    }
+
+    startQuiz();
+  </script>
+</body>
+</html>
